@@ -1,13 +1,13 @@
-# MHGU Forge
+# MHXX Forge
 
-An environment for linking, runtime hooking and code patching in Monster Hunter Generations Ultimate.
+An environment for linking, runtime hooking and code patching in Monster Hunter Double Cross.
 
 ## Installing (Ryujinx)
 
-1. Download the latest release from the [releases page](https://github.com/Fexty12573/forge/releases)
-2. Open Ryujinx, right click MHGU and select "Open Mods Directory"
+1. Download the latest release from the [releases page](https://github.com/ZellD-0371/forge/releases/latest)
+2. Open Ryujinx, right click MHXX and select "Open Mods Directory"
 3. Extract the contents of the downloaded archive into that folder
-4. In Ryujinx, right click MHGU and select "Create Custom Configuration" (or "Edit Custom Configuration" if you already did so before)
+4. In Ryujinx, right click MHXX and select "Create Custom Configuration" (or "Edit Custom Configuration" if you already did so before)
 5. Go to the CPU section and **disable** the "PPTC (Profiled Persistent Translation Cache)" option
 6. Click "Save".
 7. Right click MHGU and select "Cache Management > Purge PPTC Cache" and "Cache Management > Purge Shader Cache"
@@ -16,6 +16,8 @@ An environment for linking, runtime hooking and code patching in Monster Hunter 
 ### Keyboard Input
 
 To make keyboard input work, you need to enable "Direct Keyboard Access" in the Ryujinx Input Settings.
+Then press F9 or Shift+F9 
+If you are using a controller, please press L3 + R3.
 
 ## Building
 
