@@ -642,9 +642,7 @@ static void ImGui_ImplNVN_UpdateMouseFromTouch()
 
     float tx, ty;
     if (forge_input_getTouch(&tx, &ty)) {
-        io.AddMousePosEvent(
-            tx * io.DisplaySize.x / 1280.0f,
-            ty * io.DisplaySize.y / 720.0f);
+        io.AddMousePosEvent(tx, ty);
 
         io.AddMouseButtonEvent(ImGuiMouseButton_Left, true);
     } else {
@@ -733,8 +731,9 @@ IMGUI_IMPL_API void ImGui_ImplNVN_NewFrame()
     io.DisplayFramebufferScale = ImVec2(1, 1);
 
     // DPI scaling
+    constexpr float kForgeUiScale = 0.75f;
     ImGuiStyle& style = ImGui::GetStyle();
-    const float dpiScale = io.DisplaySize.y / 720.0f;
+    const float dpiScale = (io.DisplaySize.y / 720.0f) * kForgeUiScale;
     if (dpiScale != bd->appliedDpiScale && bd->appliedDpiScale > 0.0f) {
         style.ScaleAllSizes(dpiScale / bd->appliedDpiScale);
         bd->appliedDpiScale = dpiScale;

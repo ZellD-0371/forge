@@ -64,3 +64,7 @@ You'll find `subsdk.nso` and `main.npdm` in the project directory. Move `subsdk.
 * [RicBent/codedx](https://github.com/RicBent/codedx) for building an NSO
 * [xerpi/libnx](https://github.com/xerpi/libnx) for an AArch32 userland library
 * [Magic1-Mods/And32InlineHook](https://github.com/Magic1-Mods/And32InlineHook) for AArch32 hooks
+
+## MHXX JPN 1.5.1 build
+
+The `config-mhxx.json` profile targets title ID `0x0100C3800049C000`. Build the module with `make CONFIG_JSON=config-mhxx.json`. The Japanese path starts plugins and dispatches their per-frame callbacks from the graphics-present hook, while skipping MHGU-specific singleton and game-update hooks. Save data is mounted through the SDK at `forge_savedata`. MHXX-specific game-object bindings and the game socket-pool adapter are not implemented by this profile, so plugins that depend on those MHGU-specific integrations need their own MHXX implementation.

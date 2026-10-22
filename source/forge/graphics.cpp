@@ -2,8 +2,10 @@
 #include "forge/hook.h"
 #include "forge/input.h"
 #include "forge/log.h"
+#include "forge/nn/os.h"
 #include "forge/nn/ro.h"
 #include "forge/plugin.h"
+#include "forge/proc.h"
 #include "forge/version.h"
 #include "graphics/imgui_impl_nvn.h"
 
@@ -12,9 +14,43 @@
 #include <nvn/nvn_CppFuncPtrBase.h>
 #include <nvn/nvn_CppMethods.h>
 
+#include <algorithm>
 #include <memory>
 #include <string_view>
 #include <vector>
+
+namespace {
+
+bool s_japaneseRuntimeStarted = false;
+bool s_controllerMenuChordWasDown = false;
+s64 s_lastJapaneseFrameTick = 0;
+
+void startJapaneseRuntime()
+{
+    if (!forge_proc_isMhxxJpn() || s_japaneseRuntimeStarted) {
+        return;
+    }
+
+    forge_plugin_loadPlugins();
+    s_japaneseRuntimeStarted = true;
+}
+
+float getJapaneseFrameDelta()
+{
+    const auto now = nn::os::GetSystemTick();
+    const auto previous = s_lastJapaneseFrameTick;
+    s_lastJapaneseFrameTick = now.value;
+
+    const auto frequency = nn::os::GetSystemTickFrequency();
+    if (previous == 0 || frequency <= 0 || now.value < previous) {
+        return 1.0f / 60.0f;
+    }
+
+    const auto seconds = static_cast<double>(now.value - previous) / static_cast<double>(frequency);
+    return static_cast<float>(std::clamp(seconds, 0.0, 0.25));
+}
+
+}
 
 static Hook s_nvnBoostrapperLoaderHook;
 static PFNNVNGENERICFUNCPTRPROC (*s_originalNvnBootstrapLoader)(const char*) = nullptr;
@@ -179,6 +215,11 @@ void customQueuePresentTexture(NVNqueue* queue, NVNwindow* window, int textureIn
 {
     auto gfx = Graphics::get();
 
+    if (forge_proc_isMhxxJpn()) {
+        startJapaneseRuntime();
+        forge_plugin_updateFrame(getJapaneseFrameDelta());
+    }
+
     // The present queue is the one we must submit our overlay on; it is
     // authoritative here regardless of how many queues the game created.
     gfx->setQueue(queue);
@@ -336,7 +377,13 @@ void Graphics::setupStyle()
 void Graphics::render()
 {
     const auto menuKey = static_cast<ForgeKey>(forge_config_get()->menu_key);
-    if (forge_input_isKeyPressed(menuKey)) {
+    const bool controllerMenuChordDown =
+        forge_input_isDown(ForgeButton_StickL) && forge_input_isDown(ForgeButton_StickR);
+    const bool controllerMenuChordPressed = controllerMenuChordDown && !s_controllerMenuChordWasDown;
+    s_controllerMenuChordWasDown = controllerMenuChordDown;
+
+    if (forge_input_isKeyPressed(menuKey) ||
+        (forge_proc_isMhxxJpn() && controllerMenuChordPressed)) {
         m_uiRendered = !m_uiRendered;
     }
 

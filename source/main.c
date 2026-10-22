@@ -38,6 +38,8 @@ void sApp_run(void* app)
 
 void forge_main()
 {
+    const bool is_mhxx_jpn = forge_proc_isMhxxJpn();
+
     forge_log_trace("[forge] Initializing Forge...");
     forge_log_trace("[forge] Version %s", FORGE_VERSION);
 
@@ -56,7 +58,13 @@ void forge_main()
     }
 
     forge_input_init();
-    forge_singleton_init();
+    if (!is_mhxx_jpn) {
+        forge_singleton_init();
+    } else {
+        forge_log_init(forge_config_get());
+    }
 
-    forge_hook_create((void*)(g_mainTextAddr + 0xB8692C), (void*)(sApp_run), (void**)(&original_sApp_run));
+    if (!is_mhxx_jpn) {
+        forge_hook_create((void*)(g_mainTextAddr + 0xB8692C), (void*)(sApp_run), (void**)(&original_sApp_run));
+    }
 }

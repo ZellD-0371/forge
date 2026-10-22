@@ -8,6 +8,7 @@ extern "C" {
 
 Handle forge_proc_getHandle();
 u64 forge_proc_getProgramId();
+bool forge_proc_isMhxxJpn();
 
 #ifdef __cplusplus
 }

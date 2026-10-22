@@ -8,7 +8,11 @@
 #include <string.h>
 #include <unistd.h>
 
-static Config s_config = { };
+static Config s_config = {
+    .log_level = "info",
+    .menu_key = 66, // ForgeKey_F9
+    .menu_font_size = 12.0f,
+};
 
 char* strdup(const char* str)
 {
@@ -40,6 +44,7 @@ Config forge_config_createDefault(void)
     Config cfg = {
         .log_level = "info",
         .menu_key = 66, // ForgeKey_F9
+        .menu_font_size = 12.0f,
     };
 
     return cfg;

@@ -8,6 +8,7 @@ extern "C" {
 
 void forge_plugin_init(void);
 void forge_plugin_loadPlugins(void);
+void forge_plugin_updateFrame(float dt);
 
 void forge_plugin_renderPluginInfo(void);
 

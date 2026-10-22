@@ -74,7 +74,7 @@ NPDMTOOL			:=	$(TOPDIR)/tools/npdmtool
 #---------------------------------------------------------------------------------
 # version derived from latest git tag + short commit hash when not at tag
 #---------------------------------------------------------------------------------
-GIT_TAG			:=	$(shell git describe --tags --abbrev=0 2>/dev/null || echo "v0.0.0")
+GIT_TAG			:=	$(shell git describe --tags --abbrev=0 2>/dev/null || echo "v1.5.1")
 GIT_COMMIT		:=	$(shell git rev-parse --short HEAD 2>/dev/null || echo "unknown")
 GIT_EXACT		:=	$(shell git describe --exact-match --tags HEAD >/dev/null 2>&1 && echo 1 || echo 0)
 
@@ -167,7 +167,7 @@ $(NPDMTOOL): $(SWITCH_TOOLS_SRC)/npdmtool.c $(SWITCH_TOOLS_SRC)/cJSON.c $(SWITCH
 	@cc -O2 -I$(SWITCH_TOOLS_SRC) -o $@ $^
 	@echo built ... $(notdir $@)
 
-$(VERSION_HEADER): $(TOPDIR)/data/version.h.in
+$(VERSION_HEADER): $(TOPDIR)/data/version.h.in $(TOPDIR)/Makefile
 	@mkdir -p $(dir $@)
 	@sed \
 		-e 's|@FORGE_VERSION@|$(FORGE_VERSION)|g' \
@@ -179,7 +179,16 @@ $(VERSION_HEADER): $(TOPDIR)/data/version.h.in
 		$< > $@
 	@echo generated ... $(notdir $@)
 
-$(BUILD): $(ELF2NSO32) $(NPDMTOOL) $(VERSION_HEADER)
+$(BUILD)/version.h: $(INIPARSER_DIR)/../cmake/version.h.in
+	@mkdir -p $(dir $@)
+	@sed \
+		-e 's|@PROJECT_VERSION_MAJOR@|4|g' \
+		-e 's|@PROJECT_VERSION_MINOR@|3|g' \
+		-e 's|@PROJECT_VERSION_PATCH@|2|g' \
+		$< > $@
+	@echo generated ... $(notdir $@)
+
+$(BUILD): $(ELF2NSO32) $(NPDMTOOL) $(VERSION_HEADER) $(BUILD)/version.h
 	@$(MAKE) -C $(CURDIR)/libs/libnx/nx -f $(CURDIR)/libs/libnx/nx/Makefile.32_min.mk
 	@[ -d $@ ] || mkdir -p $@
 	@$(MAKE) -C $(BUILD) -f $(CURDIR)/Makefile
@@ -206,7 +215,7 @@ $(OUTPUT).nso	:	$(OUTPUT).elf $(TOPDIR)/main.npdm
 
 $(OUTPUT).elf	:	$(OFILES) $(INIPARSER_LIB)
 
-$(OFILES_SRC)	: $(HFILES_BIN) $(TOPDIR)/$(BUILD)/forge/version.h
+$(OFILES_SRC)	: $(HFILES_BIN) $(TOPDIR)/$(BUILD)/forge/version.h $(TOPDIR)/$(BUILD)/version.h
 
 $(INIPARSER_LIB): $(INIPARSER_OBJS)
 	@echo archiving $(notdir $@)

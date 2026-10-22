@@ -84,3 +84,8 @@ u64 forge_proc_getProgramId()
     svcGetInfo(&programId, 18, CUR_PROCESS_HANDLE, 0);
     return programId;
 }
+
+bool forge_proc_isMhxxJpn()
+{
+    return forge_proc_getProgramId() == 0x0100C3800049C000ULL;
+}

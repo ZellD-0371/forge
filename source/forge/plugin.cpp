@@ -173,6 +173,11 @@ void forge_plugin_onUpdateHook(void* main)
     s_pluginLoader.original_update(main);
     const auto delta_time = *(float*)((u8*)main + 0x68);
 
+    forge_plugin_updateFrame(delta_time);
+}
+
+extern "C" void forge_plugin_updateFrame(float delta_time)
+{
     for (const auto& plugin : s_pluginLoader.plugins) {
         if (plugin.events.on_update) {
             plugin.events.on_update(delta_time);
